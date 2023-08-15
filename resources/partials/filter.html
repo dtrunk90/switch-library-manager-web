@@ -1,0 +1,46 @@
+{{- define "filter"}}
+					<div class="d-flex flex-column flex-md-row">
+						<form class="mb-3 mb-md-0 me-md-3 flex-grow-1">
+							<div class="input-group">
+								<input type="text" class="form-control" name="q" placeholder="Search..." aria-label="Search" aria-describedby="button-search">
+								<button class="btn btn-secondary bi bi-search" type="submit" id="button-search"><span class="visually-hidden">Search</span></button>
+							</div>
+							<input type="hidden" name="per_page" value="{{.Filter.PerPage}}">
+							<input type="hidden" name="sort_by" value="{{.Filter.SortBy}}">
+							<input type="hidden" name="sort_order" value="{{.Filter.SortOrder}}">
+						</form>
+						<form class="d-flex flex-column flex-md-row">
+							<select class="form-select w-auto mb-3 mb-md-0 me-md-3" aria-label="Items per page" name="per_page" onchange="this.form.submit()">
+								{{- range mkSlice 12 24 48 96}}
+								<option value="{{.}}"{{if eq . $.Filter.PerPage}} selected{{end}}>{{.}} Items per Page</option>
+								{{- end}}
+							</select>
+							<div class="d-flex">
+								<select class="form-select me-3" aria-label="Sort by" name="sort_by" onchange="this.form.submit()">
+									{{- if eq .Page "dlc"}}
+									<option value="missing"{{if eq .Filter.SortBy "missing"}} selected{{end}}># Missing</option>
+									{{- end}}
+									<option value="id"{{if eq .Filter.SortBy "id"}} selected{{end}}>ID</option>
+									{{- if eq .Page "updates"}}
+									<option value="latest_update_date"{{if eq .Filter.SortBy "latest_update_date"}} selected{{end}}>Latest Update Date</option>
+									{{- end}}
+									<option value="name"{{if eq .Filter.SortBy "name"}} selected{{end}}>Name</option>
+									<option value="region"{{if eq .Filter.SortBy "region"}} selected{{end}}>Region</option>
+									{{- if or (eq .Page "index") (eq .Page "missing") (eq .Page "updates")}}
+									<option value="release_date"{{if eq .Filter.SortBy "release_date"}} selected{{end}}>Release Date</option>
+									{{- end}}
+									{{- if or (eq .Page "index") (eq .Page "updates")}}
+									<option value="type"{{if eq .Filter.SortBy "type"}} selected{{end}}>Type</option>
+									{{- end}}
+								</select>
+								<div class="btn-group" role="group" aria-label="Sort order">
+									<input type="radio" class="btn-check" name="sort_order" value="asc" id="ascSortOrder" autocomplete="off" onchange="this.form.submit()"{{if eq .Filter.SortOrder "asc"}} checked{{end}}>
+									<label class="btn btn-outline-secondary text-light bi bi-caret-down-fill" for="ascSortOrder"><span class="visually-hidden">Ascending</span></label>
+									<input type="radio" class="btn-check" name="sort_order" value="desc" id="descSortOrder" autocomplete="off" onchange="this.form.submit()"{{if eq .Filter.SortOrder "desc"}} checked{{end}}>
+									<label class="btn btn-outline-secondary text-light bi bi-caret-up-fill" for="descSortOrder"><span class="visually-hidden">Descending</span></label>
+								</div>
+							</div>
+							<input type="hidden" name="q" value="{{.Filter.Keyword}}">
+						</form>
+					</div>
+{{- end}}

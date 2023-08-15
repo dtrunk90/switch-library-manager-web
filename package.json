@@ -1,0 +1,21 @@
+{
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-babel-minify": "^0.5.2",
+    "gulp-clean": "^0.4.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-if": "^3.0.0",
+    "gulp-jshint": "^2.1.0",
+    "gulp-purge-sourcemaps": "^1.0.0",
+    "gulp-remove-empty-lines": "^0.1.0",
+    "gulp-sass": "^5.1.0",
+    "gulp-sourcemaps": "^3.0.0",
+    "jshint-stylish": "^2.2.1",
+    "sass": "^1.65.1"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.1",
+    "bootstrap-icons": "^1.10.5",
+    "flag-icons": "^6.9.4"
+  }
+}

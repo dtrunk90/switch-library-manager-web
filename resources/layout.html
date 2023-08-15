@@ -1,0 +1,86 @@
+{{- define "layout" -}}
+<!doctype html>
+<html class="min-vh-100" lang="en" data-bs-theme="dark">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{{template "title" .}} - Switch Library Manager Web</title>
+	<link rel="stylesheet" href="/resources/static/web.css" />
+	<link rel="icon" href="/resources/static/icon.png" />
+</head>
+<body class="d-flex flex-column min-vh-100">
+	<header class="sticky-top mb-4">
+		<nav class="navbar navbar-expand-lg sticky-top bg-body-tertiary">
+			<div class="container-fluid">
+				<span class="navbar-brand mb-0 h1">
+					<img src="/resources/static/icon.png" alt="Switch Library Manager" width="30" height="24" class="d-inline-block align-text-top">
+					Switch Library Manager
+				</span>
+				<button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+					<div class="offcanvas-header">
+						<h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+					</div>
+					<div class="offcanvas-body d-flex">
+						<ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+							<li class="nav-item">
+								<a class="nav-link{{if eq .Page "index"}} active{{end}}" href="index.html">Library</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link{{if eq .Page "missing"}} active{{end}}" href="missing.html">Missing Games</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link{{if eq .Page "updates"}} active{{end}}" href="updates.html">Updates</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link{{if eq .Page "dlc"}} active{{end}}" href="dlc.html">DLC</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link{{if eq .Page "issues"}} active{{end}}" href="issues.html">Issues</a>
+							</li>
+							<li class="d-flex flex-column flex-grow-1 flex-lg-grow-0 justify-content-end">
+								<ul class="navbar-nav flex-row flex-wrap justify-content-center">
+									<li class="nav-item py-2 py-lg-1 col-12 col-lg-auto">
+										<div class="vr d-none d-lg-flex h-100 mx-lg-2 text-white"></div>
+										<hr class="d-lg-none my-2 text-white-50">
+									</li>
+									<!--
+									<li class="nav-item flex-grow-1 text-center">
+										<a class="nav-link" href="organize.html">Organize</a>
+									</li>
+									-->
+									<li class="nav-item flex-grow-1 text-center">
+										<a class="nav-link" href="settings.html">Settings</a>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</nav>
+	</header>
+	<main class="flex-grow-1 mb-4">
+		<section class="container-fluid">
+			{{- if not .IsKeysFileAvailable}}
+			<div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert">
+				<span class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2"></span>
+				<div><strong>Product Keys not found!</strong> Analyzing NSP files is disabled. Library content is based on file names only.</div>
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+			{{- end}}
+			{{- template "main" .}}
+		</section>
+	</main>
+	<footer class="bg-body-tertiary text-body-secondary py-4 text-center">
+		<a class="fs-1 link-secondary" href="https://github.com/dtrunk90/switch-library-manager-web" data-bs-toggle="tooltip" data-bs-placement="top" title="Fork me on GitHub"><span class="bi bi-github"><span class="visually-hidden">Fork me on GitHub</span></span></a><br>
+		Switch Library Manager Web {{.Version}}<br>
+		<small>based on <a class="link-secondary" href="https://github.com/giwty/switch-library-manager/releases/tag/{{.SlmVersion}}">Switch Library Manager {{.SlmVersion}}</a></small>
+	</footer>
+	<script src="/resources/static/web.js"></script>
+</body>
+</html>
+{{end}}

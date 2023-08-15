@@ -1,0 +1,22 @@
+{{define "title"}}Updates{{end}}
+{{define "main"}}
+			<div class="row mb-3">
+				<div class="col d-flex flex-column flex-lg-row justify-content-lg-between align-items-lg-center">
+					<h1 class="mb-3">Updates <span class="badge bg-secondary fs-6 align-text-top">{{.Pagination.NumItems}}</span></h1>
+					{{- template "filter" .}}
+				</div>
+			</div>
+			{{- if gt (len .TitleItems) 0}}
+			<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 mb-3">
+				{{- range .TitleItems}}
+				{{- template "card" .}}
+				{{- end}}
+			</div>
+			{{- template "pagination" .}}
+			{{- else}}
+			<div class="alert alert-success d-flex align-items-center" role="alert">
+				<span class="bi bi-check-circle-fill flex-shrink-0 me-2"></span>
+				<div><strong>Well done!</strong> No missing updates found.</div>
+			</div>
+			{{- end}}
+{{- end}}

@@ -1,15 +1,22 @@
 package main
 
 import (
+	"embed"
 	"fmt"
-	"github.com/giwty/switch-library-manager/settings"
+	"github.com/dtrunk90/switch-library-manager-web/settings"
+	"github.com/dtrunk90/switch-library-manager-web/web"
 	"go.uber.org/zap"
-	"net/url"
 	"os"
 	"path/filepath"
-	"runtime"
-	"strings"
 )
+
+//go:embed resources/static
+//go:embed node_modules/bootstrap-icons/font/fonts
+//go:embed node_modules/flag-icons/flags
+//go:embed resources/layout.html
+//go:embed resources/partials/*.html
+//go:embed resources/pages/*.html
+var embedFS embed.FS
 
 func main() {
 
@@ -19,43 +26,27 @@ func main() {
 		return
 	}
 
-	workingFolder := filepath.Dir(exePath)
-
-	if runtime.GOOS == "darwin" {
-		if strings.Contains(workingFolder, ".app") {
-			appIndex := strings.Index(workingFolder, ".app")
-			sepIndex := strings.LastIndex(workingFolder[:appIndex], string(os.PathSeparator))
-			workingFolder = workingFolder[:sepIndex]
-		}
+	dataFolder, ok := os.LookupEnv("SLM_DATA_DIR")
+	if !ok {
+		dataFolder = filepath.Dir(exePath)
 	}
 
-	appSettings := settings.ReadSettings(workingFolder)
+	appSettings := settings.ReadSettings(dataFolder)
 
-	logger := createLogger(workingFolder, appSettings.Debug)
+	logger := createLogger(appSettings.Debug)
 
 	defer logger.Sync() // flushes buffer, if any
 	sugar := logger.Sugar()
 
 	sugar.Info("[SLM starts]")
 	sugar.Infof("[Executable: %v]", exePath)
-	sugar.Infof("[Working directory: %v]", workingFolder)
+	sugar.Infof("[Data folder: %v]", dataFolder)
 
-	appSettings.GUI = true
-
-	files, err := AssetDir(workingFolder)
-	if files == nil && err == nil {
-		appSettings.GUI = false
-	}
-
-	if appSettings.GUI {
-		CreateGUI(workingFolder, sugar).Start()
-	} else {
-		CreateConsole(workingFolder, sugar).Start()
-	}
+	web.CreateWeb(embedFS, appSettings, dataFolder, sugar).Start()
 
 }
 
-func createLogger(workingFolder string, debug bool) *zap.Logger {
+func createLogger(debug bool) *zap.Logger {
 	var config zap.Config
 	if debug {
 		config = zap.NewDevelopmentConfig()
@@ -63,20 +54,6 @@ func createLogger(workingFolder string, debug bool) *zap.Logger {
 		config = zap.NewDevelopmentConfig()
 		config.Level = zap.NewAtomicLevelAt(zap.InfoLevel)
 	}
-	logPath := filepath.Join(workingFolder, "slm.log")
-	// delete old file
-	os.Remove(logPath)
-
-	if runtime.GOOS == "windows" {
-		zap.RegisterSink("winfile", func(u *url.URL) (zap.Sink, error) {
-			// Remove leading slash left by url.Parse()
-			return os.OpenFile(u.Path[1:], os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
-		})
-		logPath = "winfile:///" + logPath
-	}
-
-	config.OutputPaths = []string{logPath}
-	config.ErrorOutputPaths = []string{logPath}
 	logger, err := config.Build()
 	if err != nil {
 		fmt.Printf("failed to create logger - %v", err)

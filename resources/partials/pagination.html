@@ -1,0 +1,49 @@
+{{- define "pagination"}}
+			<div class="row">
+				<div class="col d-flex justify-content-center">
+					<nav aria-label="Page navigation">
+						<ul class="pagination mb-0">
+							<li class="page-item{{if not .Pagination.HasPrev}} disabled{{end}}">
+								<a class="page-link" href="?per_page={{.Filter.PerPage}}&amp;sort_by={{.Filter.SortBy}}&amp;sort_order={{.Filter.SortOrder}}&amp;page={{.Pagination.PrevPage}}" aria-label="Previous">
+									<span aria-hidden="true">&laquo;</span>
+								</a>
+							</li>
+							{{- if lt .Pagination.NumPages 7}}
+							{{- range mkRange 1 .Pagination.NumPages}}
+							<li class="page-item{{if eq . $.Filter.Page}} active{{end}}"><a class="page-link" href="?per_page={{$.Filter.PerPage}}&amp;sort_by={{$.Filter.SortBy}}&amp;sort_order={{$.Filter.SortOrder}}&amp;page={{.}}">{{.}}</a></li>
+							{{- end}}
+							{{- else}}
+							<li class="page-item{{if eq .Pagination.CurrentPage 1}} active{{end}}"><a class="page-link" href="?per_page={{.Filter.PerPage}}&amp;sort_by={{.Filter.SortBy}}&amp;sort_order={{.Filter.SortOrder}}&amp;page=1">1</a></li>
+							{{- if gt .Pagination.CurrentPage 3}}
+							<li class="page-item disabled"><span class="page-link">&mldr;</span></li>
+							{{- end}}
+							{{- if eq .Pagination.CurrentPage .Pagination.NumPages}}
+							<li class="page-item"><a class="page-link" href="?per_page={{.Filter.PerPage}}&amp;sort_by={{.Filter.SortBy}}&amp;sort_order={{.Filter.SortOrder}}&amp;page={{subtract .Pagination.CurrentPage 2}}">{{subtract .Pagination.CurrentPage 2}}</a></li>
+							{{- end}}
+							{{- if gt .Pagination.CurrentPage 2}}
+							<li class="page-item"><a class="page-link" href="?per_page={{.Filter.PerPage}}&amp;sort_by={{.Filter.SortBy}}&amp;sort_order={{.Filter.SortOrder}}&amp;page={{subtract .Pagination.CurrentPage 1}}">{{subtract .Pagination.CurrentPage 1}}</a></li>
+							{{- end}}
+							{{- if and (neq .Pagination.CurrentPage 1) (neq .Pagination.CurrentPage .Pagination.NumPages)}}
+							<li class="page-item active"><a class="page-link" href="?per_page={{.Filter.PerPage}}&amp;sort_by={{.Filter.SortBy}}&amp;sort_order={{.Filter.SortOrder}}&amp;page={{.Pagination.CurrentPage}}">{{.Pagination.CurrentPage}}</a></li>
+							{{- end}}
+							{{- if lt .Pagination.CurrentPage (subtract .Pagination.NumPages 1)}}
+							<li class="page-item"><a class="page-link" href="?per_page={{.Filter.PerPage}}&amp;sort_by={{.Filter.SortBy}}&amp;sort_order={{.Filter.SortOrder}}&amp;page={{add .Pagination.CurrentPage 1}}">{{add .Pagination.CurrentPage 1}}</a></li>
+							{{- end}}
+							{{- if eq .Pagination.CurrentPage 1}}
+							<li class="page-item"><a class="page-link" href="?per_page={{.Filter.PerPage}}&amp;sort_by={{.Filter.SortBy}}&amp;sort_order={{.Filter.SortOrder}}&amp;page={{add .Pagination.CurrentPage 2}}">{{add .Pagination.CurrentPage 2}}</a></li>
+							{{- end}}
+							{{- if lt .Pagination.CurrentPage (subtract .Pagination.NumPages 2)}}
+							<li class="page-item disabled"><span class="page-link">&mldr;</span></li>
+							{{- end}}
+							<li class="page-item{{if eq .Pagination.CurrentPage .Pagination.NumPages}} active{{end}}"><a class="page-link" href="?per_page={{.Filter.PerPage}}&amp;sort_by={{.Filter.SortBy}}&amp;sort_order={{.Filter.SortOrder}}&amp;page={{.Pagination.NumPages}}">{{.Pagination.NumPages}}</a></li>
+							{{- end}}
+							<li class="page-item{{if not .Pagination.HasNext}} disabled{{end}}">
+								<a class="page-link" href="?per_page={{.Filter.PerPage}}&amp;sort_by={{.Filter.SortBy}}&amp;sort_order={{.Filter.SortOrder}}&amp;page={{.Pagination.NextPage}}" aria-label="Next">
+									<span aria-hidden="true">&raquo;</span>
+								</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+{{- end}}

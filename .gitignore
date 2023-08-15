@@ -1,3 +1,5 @@
 .idea
-resources/app/vendor
-output
+build
+node_modules
+resources/static/web.css
+resources/static/web.js

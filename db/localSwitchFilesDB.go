@@ -3,9 +3,9 @@ package db
 import (
 	"errors"
 	"fmt"
-	"github.com/giwty/switch-library-manager/fileio"
-	"github.com/giwty/switch-library-manager/settings"
-	"github.com/giwty/switch-library-manager/switchfs"
+	"github.com/dtrunk90/switch-library-manager-web/fileio"
+	"github.com/dtrunk90/switch-library-manager-web/settings"
+	"github.com/dtrunk90/switch-library-manager-web/switchfs"
 	"go.uber.org/zap"
 	"os"
 	"path/filepath"
@@ -34,8 +34,8 @@ type LocalSwitchDBManager struct {
 	db *PersistentDB
 }
 
-func NewLocalSwitchDBManager(baseFolder string) (*LocalSwitchDBManager, error) {
-	db, err := NewPersistentDB(baseFolder)
+func NewLocalSwitchDBManager(dataFolder string) (*LocalSwitchDBManager, error) {
+	db, err := NewPersistentDB(dataFolder)
 	if err != nil {
 		return nil, err
 	}

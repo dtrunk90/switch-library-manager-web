@@ -1,0 +1,56 @@
+{{define "title"}}DLC{{end}}
+{{define "main"}}
+			<div class="row mb-3">
+				<div class="col d-flex flex-column flex-lg-row justify-content-lg-between align-items-lg-center">
+					<h1 class="mb-3">DLC <span class="badge bg-secondary fs-6 align-text-top">{{.Pagination.NumItems}}</span></h1>
+					{{- template "filter" .}}
+				</div>
+			</div>
+			{{- if gt (len .TitleItems) 0}}
+			<table class="table table-striped table-hover table-responsive mb-3">
+				<thead>
+					<tr>
+						<th scope="col">Title</th>
+						<th class="text-nowrap" scope="col"># Missing</th>
+						<th scope="col">Missing DLC</th>
+					</tr>
+				</thead>
+				<tbody class="table-group-divider">
+					{{- range .TitleItems}}
+					<tr>
+						<td>
+							<div class="d-flex align-items-top">
+								<div class="me-3 position-relative">
+									{{- if .Region}}
+									<div class="position-absolute bottom-0 end-0 d-flex m-1">
+										<span class="fi fi-{{.Region | toLower}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{.Region}}"><span class="visually-hidden">{{.Region}}</span></span>
+									</div>
+									{{- end}}
+									<img src="{{if eq .ImageUrl ""}}/resources/static/noimage.png{{else}}{{.ImageUrl}}{{end}}" class="card-img-top" alt="{{.Name}}">
+								</div>
+								<div>
+									{{.Name}}<br>
+									<small class="text-body-secondary">ID: {{.Id}}</small>
+								</div>
+							</div>
+						</td>
+						<td>{{len .MissingDLC}}</td>
+						<td>
+							<ul class="list-unstyled">
+								{{- range .MissingDLC}}
+								<li class="text-nowrap">{{.}}</li>
+								{{- end}}
+							</ul>
+						</td>
+					</tr>
+					{{- end}}
+				</tbody>
+			</table>
+			{{- template "pagination" .}}
+			{{- else}}
+			<div class="alert alert-success d-flex align-items-center" role="alert">
+				<span class="bi bi-check-circle-fill flex-shrink-0 me-2"></span>
+				<div><strong>Well done!</strong> No missing DLC found.</div>
+			</div>
+			{{- end}}
+{{- end}}

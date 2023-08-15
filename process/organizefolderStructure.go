@@ -1,8 +1,8 @@
 package process
 
 import (
-	"github.com/giwty/switch-library-manager/db"
-	"github.com/giwty/switch-library-manager/settings"
+	"github.com/dtrunk90/switch-library-manager-web/db"
+	"github.com/dtrunk90/switch-library-manager-web/settings"
 	"go.uber.org/zap"
 	"io/ioutil"
 	"os"
@@ -20,7 +20,7 @@ var (
 	cjk                     = regexp.MustCompile("[\u2f70-\u2FA1\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f\\p{Katakana}\\p{Hiragana}\\p{Hangul}]")
 )
 
-func DeleteOldUpdates(baseFolder string, localDB *db.LocalSwitchFilesDB, updateProgress db.ProgressUpdater) {
+func DeleteOldUpdates(dataFolder string, localDB *db.LocalSwitchFilesDB, updateProgress db.ProgressUpdater) {
 	i := 0
 	for k, v := range localDB.Skipped {
 		switch v.ReasonCode {
@@ -41,11 +41,11 @@ func DeleteOldUpdates(baseFolder string, localDB *db.LocalSwitchFilesDB, updateP
 
 	}
 
-	if i != 0 && settings.ReadSettings(baseFolder).OrganizeOptions.DeleteEmptyFolders {
+	if i != 0 && settings.ReadSettings(dataFolder).OrganizeOptions.DeleteEmptyFolders {
 		if updateProgress != nil {
 			updateProgress.UpdateProgress(i, i+1, "deleting empty folders... (can take 1-2min)")
 		}
-		err := deleteEmptyFolders(baseFolder)
+		err := deleteEmptyFolders(dataFolder)
 		if err != nil {
 			zap.S().Errorf("Failed to delete empty folders [%v]\n", err)
 		}
@@ -55,14 +55,14 @@ func DeleteOldUpdates(baseFolder string, localDB *db.LocalSwitchFilesDB, updateP
 	}
 }
 
-func OrganizeByFolders(baseFolder string,
+func OrganizeByFolders(dataFolder string,
 	localDB *db.LocalSwitchFilesDB,
 	titlesDB *db.SwitchTitlesDB,
 	updateProgress db.ProgressUpdater) {
 
 	//validate template rules
 
-	options := settings.ReadSettings(baseFolder).OrganizeOptions
+	options := settings.ReadSettings(dataFolder).OrganizeOptions
 	if !IsOptionsValid(options) {
 		zap.S().Error("the organize options in settings.json are not valid, please check that the template contains file/folder name")
 		return
@@ -101,7 +101,7 @@ func OrganizeByFolders(baseFolder string,
 		//create folder if needed
 		if options.CreateFolderPerGame {
 			folderToCreate := getFolderName(options, templateData)
-			destinationPath = filepath.Join(baseFolder, folderToCreate)
+			destinationPath = filepath.Join(dataFolder, folderToCreate)
 			if _, err := os.Stat(destinationPath); os.IsNotExist(err) {
 				err = os.Mkdir(destinationPath, os.ModePerm)
 				if err != nil {
@@ -196,7 +196,7 @@ func OrganizeByFolders(baseFolder string,
 			i += 1
 			updateProgress.UpdateProgress(i, tasksSize, "deleting empty folders... (can take 1-2min)")
 		}
-		err := deleteEmptyFolders(baseFolder)
+		err := deleteEmptyFolders(dataFolder)
 		if err != nil {
 			zap.S().Errorf("Failed to delete empty folders [%v]\n", err)
 		}

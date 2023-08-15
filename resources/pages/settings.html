@@ -1,0 +1,36 @@
+{{define "title"}}Settings{{end}}
+{{define "main"}}
+			<div class="row mb-3">
+				<div class="col">
+					<h1 class="mb-3">Settings</h1>
+				</div>
+			</div>
+			<form class="row g-3 mb-3" id="settingsForm" method="post">
+				<div class="col-12">
+					<label for="prod_keys" class="form-label">Product Keys Path</label>
+					<input type="text" class="form-control" id="prod_keys" name="prod_keys" value="{{.Settings.Prodkeys}}">
+				</div>
+				<div class="col-lg-6">
+					<label for="scan_folders" class="form-label">Folders to scan</label>
+					<textarea class="form-control" id="scan_folders" name="scan_folders" rows="12">
+{{.Settings.Folder}}
+{{- range .Settings.ScanFolders}}
+{{.}}
+{{- end -}}
+					</textarea>
+					<div class="form-text">One folder per Line</div>
+				</div>
+				<div class="col-lg-6">
+					<label for="ignore_dlc_title_ids" class="form-label">Ignored DLC Title IDs</label>
+					<textarea class="form-control" id="ignore_dlc_title_ids" name="ignore_dlc_title_ids" rows="12">
+{{- range .Settings.IgnoreDLCTitleIds}}
+{{.}}
+{{- end -}}
+					</textarea>
+					<div class="form-text">One Title ID per Line</div>
+				</div>
+				<div class="col-12 text-end">
+					<button type="submit" class="btn btn-secondary">Save</button>
+				</div>
+			</form>
+{{- end}}

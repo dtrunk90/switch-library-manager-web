@@ -1,0 +1,42 @@
+{{- define "card"}}
+				<div class="col mb-3">
+					<div class="card h-100">
+						<div class="position-relative overflow-hidden">
+							{{- if or .Type .Region}}
+							<div class="position-absolute bottom-0 end-0 d-flex m-1">
+								{{- if .Type}}
+								<span class="badge bg-secondary{{if .Region}} me-1{{end}}">{{.Type}}</span>
+								{{- end}}
+								{{- if .Region}}
+								<span class="fi fi-{{.Region | toLower}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{.Region}}"><span class="visually-hidden">{{.Region}}</span></span>
+								{{- end}}
+							</div>
+							{{- end}}
+							<img src="{{if eq .ImageUrl ""}}/resources/static/noimage.png{{else}}{{.ImageUrl}}{{end}}" class="card-img-top" alt="{{.Name}}">
+						</div>
+						<div class="card-body d-flex flex-column">
+							<h5 class="card-title flex-fill">{{.Name}}</h5>
+							{{- if .LatestUpdate}}
+							<p class="card-text">
+								Update: {{.LocalUpdate}} &rarr; {{.LatestUpdate}}
+							</p>
+							{{- else if .LocalUpdate}}
+							<p class="card-text">
+								Version: {{if .Version}}{{.Version}}{{else}}Unknown{{end}} ({{.LocalUpdate}})
+							</p>
+							{{- end}}
+							{{- if or (and .ReleaseDate (not .ReleaseDate.IsZero)) (and .LatestUpdateDate (not .LatestUpdateDate.IsZero))}}
+							<p class="card-text">
+								{{- if and .ReleaseDate (not .ReleaseDate.IsZero)}}
+								<div>Release Date: {{.ReleaseDate | formatTime}}</div>
+								{{- end}}
+								{{- if and .LatestUpdateDate (not .LatestUpdateDate.IsZero)}}
+								<div>Latest Update Date: {{.LatestUpdateDate | formatTime}}</div>
+								{{- end}}
+							</p>
+							{{- end}}
+							<p class="card-text"><small class="text-body-secondary">ID: {{.Id}}</small></p>
+						</div>
+					</div>
+				</div>
+{{- end}}

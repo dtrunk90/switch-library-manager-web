@@ -1,0 +1,31 @@
+{{define "title"}}Issues{{end}}
+{{define "main"}}
+			<div class="row mb-3">
+				<div class="col">
+					<h1 class="mb-3">Issues <span class="badge bg-secondary fs-6 align-text-top">{{len .Issues}}</span></h1>
+				</div>
+			</div>
+			{{- if gt (len .Issues) 0}}
+			<table class="table table-striped table-hover table-responsive mb-3">
+				<thead>
+					<tr>
+						<th scope="col">Key</th>
+						<th scope="col">Value</th>
+					</tr>
+				</thead>
+				<tbody class="table-group-divider">
+					{{- range .Issues}}
+					<tr>
+						<td>{{.File}}</td>
+						<td>{{.Reason}}</td>
+					</tr>
+					{{- end}}
+				</tbody>
+			</table>
+			{{- else}}
+			<div class="alert alert-success d-flex align-items-center" role="alert">
+				<span class="bi bi-check-circle-fill flex-shrink-0 me-2"></span>
+				<div><strong>Well done!</strong> No issues found.</div>
+			</div>
+			{{- end}}
+{{- end}}

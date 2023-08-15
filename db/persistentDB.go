@@ -5,7 +5,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"github.com/boltdb/bolt"
-	"github.com/giwty/switch-library-manager/settings"
+	"github.com/dtrunk90/switch-library-manager-web/settings"
 	"go.uber.org/zap"
 	"log"
 	"path/filepath"
@@ -19,10 +19,10 @@ type PersistentDB struct {
 	db *bolt.DB
 }
 
-func NewPersistentDB(baseFolder string) (*PersistentDB, error) {
+func NewPersistentDB(dataFolder string) (*PersistentDB, error) {
 	// Open the my.db data file in your current directory.
 	// It will be created if it doesn't exist.
-	db, err := bolt.Open(filepath.Join(baseFolder, "slm.db"), 0600, &bolt.Options{Timeout: 1 * 60})
+	db, err := bolt.Open(filepath.Join(dataFolder, "slm.db"), 0644, &bolt.Options{Timeout: 1 * 60})
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
