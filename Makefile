@@ -1,13 +1,10 @@
-all: clean docker
+all: clean gulp build
 
 build:
 	GOOS=linux CGO_ENABLED=0 go build -o build/switch-library-manager-web main.go
 
 clean:
 	rm -rf build || true
-
-docker: gulp build
-	docker build --pull -t ghcr.io/dtrunk90/switch-library-manager-web .
 
 gulp:
 	gulp
