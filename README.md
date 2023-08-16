@@ -46,7 +46,8 @@ Please refer to the Docker documentation on how to run a Docker image.
  
 ##### Example
 ```
-$ docker run --name switch-library-manager-web \
+$ docker run -d \
+	--name switch-library-manager-web \
 	-v /home/johndoe/switch-library-manager-web:/usr/local/share/switch-library-manager-web:Z \
 	-v /home/johndoe/Backups/Switch:/mnt/roms:Z \
 	-p 3000:3000 \
