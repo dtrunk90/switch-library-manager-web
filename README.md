@@ -38,7 +38,7 @@ Please set debug mode to 'true', and attach the docker log to allow for quicker 
 
 ## Usage
 
-Please refer to the Docker documentation on how to run this Docker image.
+Please refer to the Docker documentation on how to run a Docker image.
 
 ##### Volumes inside the container
 - `/usr/local/share/switch-library-manager-web`
@@ -62,5 +62,6 @@ $ docker run --rm \
 
 #### Thanks
 This program is based on [giwty's switch-library-manager](https://github.com/giwty/switch-library-manager)
+
 This program relies on [blawar's titledb](https://github.com/blawar/titledb), to get the latest titles and versions.
 
