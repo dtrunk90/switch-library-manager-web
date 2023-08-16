@@ -11,7 +11,7 @@ const sourcemaps = require('gulp-sourcemaps');
 const sass = require('gulp-sass')(require('sass'));
 
 function cleanup() {
-	return src('resources/static/web.css')
+	return src('resources/static/web.css', {"allowEmpty": true})
 		.pipe(clean());
 }
 
