@@ -12,6 +12,7 @@ const sass = require('gulp-sass')(require('sass'));
 
 function cleanup() {
 	return src('resources/static/web.css', {"allowEmpty": true})
+		.pipe(src('resources/static/web.js', {"allowEmpty": true}))
 		.pipe(clean());
 }
 
