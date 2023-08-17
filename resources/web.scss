@@ -85,15 +85,29 @@ $flag-icons-path: "/resources/vendor/flag-icons/flags";
 	width: 100%;
 }
 
+.td-img {
+	object-fit: cover;
+	height: 26vw;
+	width: auto;
+}
+
 @include media-breakpoint-up(sm) {
 	.card-img-top {
 		height: 45vw;
+	}
+
+	.td-img {
+		height: 18vw;
 	}
 }
 
 @include media-breakpoint-up(md) {
 	.card-img-top {
 		height: 30vw;
+	}
+
+	.td-img {
+		height: 15vw;
 	}
 }
 
