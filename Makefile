@@ -5,6 +5,7 @@ build:
 
 clean:
 	rm -rf build || true
+	gulp clean
 
 gulp:
 	gulp
