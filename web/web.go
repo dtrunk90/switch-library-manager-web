@@ -156,6 +156,8 @@ func (web *Web) Start() {
 	web.HandleSettings()
 	web.HandleOrganize()
 
+	http.Handle("/", http.RedirectHandler("/index.html", http.StatusMovedPermanently))
+
 	if err := http.ListenAndServe(fmt.Sprint(":", web.appSettings.Port), nil); err != nil {
 		web.sugarLogger.Error(fmt.Errorf("running http server failed: %w", err))
 		log.Fatal(err)
