@@ -7,6 +7,7 @@ import (
 	"github.com/dtrunk90/switch-library-manager-web/db"
 	"github.com/dtrunk90/switch-library-manager-web/pagination"
 	"github.com/dtrunk90/switch-library-manager-web/settings"
+	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 	"html/template"
 	"log"
@@ -26,6 +27,7 @@ type WebState struct {
 
 type Web struct {
 	state          WebState
+	router         *mux.Router
 	embedFS        embed.FS
 	appSettings    *settings.AppSettings
 	dataFolder     string
@@ -121,8 +123,8 @@ func strToTime(layout, value string) (time.Time, error) {
 	return time.Parse(layout, value)
 }
 
-func CreateWeb(embedFS embed.FS, appSettings *settings.AppSettings, dataFolder string, sugarLogger *zap.SugaredLogger) *Web {
-	return &Web{state: WebState{}, embedFS: embedFS, appSettings: appSettings, dataFolder: dataFolder, sugarLogger: sugarLogger}
+func CreateWeb(router *mux.Router, embedFS embed.FS, appSettings *settings.AppSettings, dataFolder string, sugarLogger *zap.SugaredLogger) *Web {
+	return &Web{state: WebState{}, router: router, embedFS: embedFS, appSettings: appSettings, dataFolder: dataFolder, sugarLogger: sugarLogger}
 }
 
 func (web *Web) Start() {
@@ -156,7 +158,9 @@ func (web *Web) Start() {
 	web.HandleSettings()
 	web.HandleOrganize()
 
-	http.Handle("/", http.RedirectHandler("/index.html", http.StatusMovedPermanently))
+	web.router.Handle("/", http.RedirectHandler("/index.html", http.StatusMovedPermanently))
+
+	http.Handle("/", web.router)
 
 	if err := http.ListenAndServe(fmt.Sprint(":", web.appSettings.Port), nil); err != nil {
 		web.sugarLogger.Error(fmt.Errorf("running http server failed: %w", err))

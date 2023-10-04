@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/dtrunk90/switch-library-manager-web/settings"
 	"github.com/dtrunk90/switch-library-manager-web/web"
+	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 	"os"
 	"path/filepath"
@@ -26,6 +27,8 @@ func main() {
 		return
 	}
 
+	router := mux.NewRouter()
+
 	dataFolder, ok := os.LookupEnv("SLM_DATA_DIR")
 	if !ok {
 		dataFolder = filepath.Dir(exePath)
@@ -42,7 +45,7 @@ func main() {
 	sugar.Infof("[Executable: %v]", exePath)
 	sugar.Infof("[Data folder: %v]", dataFolder)
 
-	web.CreateWeb(embedFS, appSettings, dataFolder, sugar).Start()
+	web.CreateWeb(router, embedFS, appSettings, dataFolder, sugar).Start()
 
 }
 

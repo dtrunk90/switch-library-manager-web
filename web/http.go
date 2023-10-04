@@ -49,7 +49,7 @@ func (web *Web) HandleFiltered(pattern string, filteredPageData FilteredPageData
 		log.Fatal(err)
 	}
 
-	http.Handle(pattern, alice.New(httpin.NewInput(TitleItemFilter{})).ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+	web.router.Handle(pattern, alice.New(httpin.NewInput(TitleItemFilter{})).ThenFunc(func(w http.ResponseWriter, r *http.Request) {
 		filter := r.Context().Value(httpin.Input).(*TitleItemFilter)
 		if err := tmpl.ExecuteTemplate(w, "layout", filteredPageData(filter)); err != nil {
 			web.sugarLogger.Error(fmt.Errorf("executing template failed: %w", err))
@@ -67,7 +67,7 @@ func (web *Web) HandleValidated(pattern string, inputStruct interface{}, pageDat
 		log.Fatal(err)
 	}
 
-	http.Handle(pattern, alice.New(httpin.NewInput(inputStruct)).ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+	web.router.Handle(pattern, alice.New(httpin.NewInput(inputStruct)).ThenFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 			case "GET":
 				if err := tmpl.ExecuteTemplate(w, "layout", pageData()); err != nil {
@@ -75,6 +75,8 @@ func (web *Web) HandleValidated(pattern string, inputStruct interface{}, pageDat
 					w.WriteHeader(http.StatusInternalServerError)
 				}
 			case "POST":
+				w.Header().Set("Content-Type", "application/json")
+
 				value := r.Context().Value(httpin.Input)
 				jsonEncoder := json.NewEncoder(w)
 
@@ -101,7 +103,7 @@ func (web *Web) Handle(pattern string, pageData PageData, fs fs.FS, fsPatterns .
 		log.Fatal(err)
 	}
 
-	http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+	web.router.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
 		if err := tmpl.ExecuteTemplate(w, "layout", pageData()); err != nil {
 			web.sugarLogger.Error(fmt.Errorf("executing template failed: %w", err))
 			w.WriteHeader(http.StatusInternalServerError)
