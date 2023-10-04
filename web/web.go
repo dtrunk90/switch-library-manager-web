@@ -157,6 +157,7 @@ func (web *Web) Start() {
 	web.HandleIssues()
 	web.HandleSettings()
 	web.HandleOrganize()
+	web.HandleApi()
 
 	web.router.Handle("/", http.RedirectHandler("/index.html", http.StatusMovedPermanently))
 
