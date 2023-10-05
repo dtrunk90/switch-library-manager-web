@@ -56,15 +56,15 @@ func (web *Web) HandleApi() {
 					}
 
 					if v.File.Metadata.Ncap != nil {
-						for langK, langV := range v.File.Metadata.Ncap.TitleName {
+						for _, langV := range v.File.Metadata.Ncap.TitleName {
 							if langV.Title != "" {
-								name[langK] = langV.Title
+								name[langV.Language.ToLanguageTag()] = langV.Title
 							}
 						}
 					}
 
 					if len(name) == 0 {
-						name["Unknown"] = db.ParseTitleNameFromFileName(v.File.ExtendedInfo.FileName)
+						name["unknown"] = db.ParseTitleNameFromFileName(v.File.ExtendedInfo.FileName)
 					}
 
 					items[titleId] = ApiTitleItem {

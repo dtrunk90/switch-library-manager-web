@@ -58,6 +58,26 @@ func (l Language) String() string {
 		"Chinese"}[l]
 }
 
+func (l Language) ToLanguageTag() string {
+	return [...]string{
+		"en-US",
+		"en-GB",
+		"ja",
+		"fr",
+		"de",
+		"es-419",
+		"es",
+		"it",
+		"nl",
+		"fr-CA",
+		"pt",
+		"ru",
+		"ko",
+		"zh-TW",
+		"zh-Hant",
+		"zh-Hans"}[l]
+}
+
 func ExtractNacp(cnmt *ContentMetaAttributes, file io.ReaderAt, securePartition *PFS0, securePartitionOffset int64) (*Nacp, error) {
 	if control, ok := cnmt.Contents["Control"]; ok {
 		controlNca := getNcaById(securePartition, control.ID)
