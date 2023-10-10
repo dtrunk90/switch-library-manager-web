@@ -13,6 +13,7 @@ import (
 type ApiFileInfo struct {
 	DownloadUrl string `json:"downloadUrl,omitempty"`
 	Size        int64  `json:"size,omitempty"`
+	Type        string `json:"type,omitempty"`
 }
 
 type ApiExtendedFileInfo struct {
@@ -49,6 +50,7 @@ func (web *Web) HandleApi() {
 					if v.Updates != nil && len(v.Updates) != 0 {
 						latestUpdate.DownloadUrl = "/api/titles/" + titleId + "/updates/" + strconv.Itoa(v.LatestUpdate)
 						latestUpdate.Size = v.Updates[v.LatestUpdate].ExtendedInfo.Size
+						latestUpdate.Type = strings.ToUpper(filepath.Ext(v.Updates[v.LatestUpdate].ExtendedInfo.FileName)[1:])
 
 						if v.Updates[v.LatestUpdate].Metadata.Ncap != nil {
 							latestUpdate.DisplayVersion = v.Updates[v.LatestUpdate].Metadata.Ncap.DisplayVersion
@@ -71,6 +73,7 @@ func (web *Web) HandleApi() {
 						ApiFileInfo: ApiFileInfo {
 							DownloadUrl:  "/api/titles/" + titleId,
 							Size:         v.File.ExtendedInfo.Size,
+							Type:         strings.ToUpper(filepath.Ext(v.File.ExtendedInfo.FileName)[1:]),
 						},
 						LatestUpdate: latestUpdate,
 						Name:         name,
@@ -93,6 +96,7 @@ func (web *Web) HandleApi() {
 								ApiFileInfo: ApiFileInfo {
 									DownloadUrl: "/api/titles/" + titleId + "/dlc/" + dlcTitleId,
 									Size:        dlc.ExtendedInfo.Size,
+									Type:        strings.ToUpper(filepath.Ext(dlc.ExtendedInfo.FileName)[1:]),
 								},
 								Version:     dlc.Metadata.Version,
 							}
