@@ -24,6 +24,9 @@ type ApiExtendedFileInfo struct {
 
 type ApiTitleItem struct {
 	ApiFileInfo
+	BannerUrl     string                         `json:"bannerUrl,omitempty"`
+	IconUrl       string                         `json:"iconUrl,omitempty"`
+	ThumbnailUrl  string                         `json:"thumbnailUrl,omitempty"`
 	LatestUpdate  ApiExtendedFileInfo            `json:"latestUpdate"`
 	Name          map[string]string              `json:"name"`
 	Region        string                         `json:"region,omitempty"`
@@ -87,6 +90,20 @@ func (web *Web) HandleApi() {
 					}
 
 					if item, ok1 := items[titleId]; ok1 {
+						if v.Banner != "" {
+							item.BannerUrl = "/i/" + v.Banner
+						}
+
+						if v.Icon != "" {
+							item.IconUrl = "/i/" + v.Icon
+						}
+
+						if item.IconUrl != "" {
+							item.ThumbnailUrl = item.IconUrl + "?width=90"
+						} else if item.BannerUrl != "" {
+							item.ThumbnailUrl = item.BannerUrl + "?width=90"
+						}
+
 						item.Dlc = map[string]ApiExtendedFileInfo{}
 
 						for id, dlc := range v.Dlc {
