@@ -66,6 +66,8 @@ type SwitchGameFiles struct {
 	MultiContent bool
 	LatestUpdate int
 	IsSplit      bool
+	Icon         string
+	Banner       string
 }
 
 type SkippedFile struct {
@@ -80,8 +82,8 @@ type LocalSwitchFilesDB struct {
 	NumFiles  int
 }
 
-func (ldb *LocalSwitchDBManager) CreateLocalSwitchFilesDB(folders []string,
-	progress ProgressUpdater, recursive bool, ignoreCache bool) (*LocalSwitchFilesDB, error) {
+func (ldb *LocalSwitchDBManager) CreateLocalSwitchFilesDB(switchDB *SwitchTitlesDB, dataFolder string,
+	folders []string, progress ProgressUpdater, recursive bool, ignoreCache bool) (*LocalSwitchFilesDB, error) {
 
 	titles := map[string]*SwitchGameFiles{}
 	skipped := map[ExtendedFileInfo]SkippedFile{}
@@ -105,7 +107,7 @@ func (ldb *LocalSwitchDBManager) CreateLocalSwitchFilesDB(folders []string,
 			}
 		}
 
-		ldb.processLocalFiles(files, progress, titles, skipped)
+		ldb.processLocalFiles(switchDB, dataFolder, files, progress, titles, skipped)
 
 		ldb.db.AddEntry(DB_TABLE_LOCAL_LIBRARY, "files", files)
 		ldb.db.AddEntry(DB_TABLE_LOCAL_LIBRARY, "skipped", skipped)
@@ -156,7 +158,8 @@ func (ldb *LocalSwitchDBManager) ClearScanData() error {
 	return ldb.db.ClearTable(DB_TABLE_FILE_SCAN_METADATA)
 }
 
-func (ldb *LocalSwitchDBManager) processLocalFiles(files []ExtendedFileInfo,
+func (ldb *LocalSwitchDBManager) processLocalFiles(switchDB *SwitchTitlesDB, dataFolder string,
+	files []ExtendedFileInfo,
 	progress ProgressUpdater,
 	titles map[string]*SwitchGameFiles,
 	skipped map[ExtendedFileInfo]SkippedFile) {
@@ -255,6 +258,23 @@ func (ldb *LocalSwitchDBManager) processLocalFiles(files []ExtendedFileInfo,
 				}
 				switchTitle.File = SwitchFileInfo{ExtendedInfo: file, Metadata: metadata}
 				switchTitle.BaseExist = true
+
+				if title, ok := switchDB.TitlesMap[idPrefix]; ok {
+					if title.Attributes.IconUrl != "" {
+						basename := filepath.Base(title.Attributes.IconUrl)
+						filename := filepath.Join(dataFolder, "img", basename)
+						if err := DownloadFile(title.Attributes.IconUrl, filename); err == nil {
+							switchTitle.Icon = basename
+						}
+					}
+					if title.Attributes.BannerUrl != "" {
+						basename := filepath.Base(title.Attributes.BannerUrl)
+						filename := filepath.Join(dataFolder, "img", basename)
+						if err := DownloadFile(title.Attributes.BannerUrl, filename); err == nil {
+							switchTitle.Banner = basename
+						}
+					}
+				}
 
 				continue
 			}

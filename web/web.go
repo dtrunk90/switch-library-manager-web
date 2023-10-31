@@ -128,6 +128,8 @@ func CreateWeb(router *mux.Router, embedFS embed.FS, appSettings *settings.AppSe
 }
 
 func (web *Web) Start() {
+	web.updateDB()
+
 	localDbManager, err := db.NewLocalSwitchDBManager(web.dataFolder)
 	if err != nil {
 		web.sugarLogger.Error("Failed to create local files db\n", err)
@@ -142,14 +144,13 @@ func (web *Web) Start() {
 	web.localDbManager = localDbManager
 	defer localDbManager.Close()
 
-	web.updateDB()
-
 	if _, err := web.buildLocalDB(web.localDbManager, true); err != nil {
 		web.sugarLogger.Error(err)
 	}
 
 	// Run http server
 	web.HandleResources()
+	web.HandleImages()
 	web.HandleIndex()
 	web.HandleMissing()
 	web.HandleUpdates()
@@ -225,7 +226,7 @@ func (web *Web) buildLocalDB(localDbManager *db.LocalSwitchDBManager, ignoreCach
 	scanFolders := settingsObj.ScanFolders
 	scanFolders = append(scanFolders, folderToScan)
 
-	localDB, err := localDbManager.CreateLocalSwitchFilesDB(scanFolders, web, true, ignoreCache)
+	localDB, err := localDbManager.CreateLocalSwitchFilesDB(web.state.switchDB, web.dataFolder, scanFolders, web, true, ignoreCache)
 	web.state.localDB = localDB
 
 	return localDB, err

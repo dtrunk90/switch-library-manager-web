@@ -79,10 +79,10 @@ func (web *Web) getLibrary(filter *TitleItemFilter) ([]TitleItem, pagination.Pag
 
 				if filter.Keyword == "" || strings.Contains(strings.ToLower(v.File.Metadata.TitleId), strings.ToLower(filter.Keyword)) || strings.Contains(strings.ToLower(name), strings.ToLower(filter.Keyword)) {
 					var imageUrl string
-					if title.Attributes.IconUrl != "" {
-						imageUrl = title.Attributes.IconUrl
-					} else if title.Attributes.BannerUrl != "" {
-						imageUrl = title.Attributes.BannerUrl
+					if v.Icon != "" {
+						imageUrl = "/i/" + v.Icon
+					} else if v.Banner != "" {
+						imageUrl = "/i/" + v.Banner
 					}
 
 					release, err := intToTime(title.Attributes.ReleaseDate)

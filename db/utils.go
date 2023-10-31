@@ -120,3 +120,25 @@ func saveFile(bytes []byte, fileName string) (*os.File, error) {
 	}
 	return file, nil
 }
+
+
+
+func DownloadFile(url string, filePath string) error {
+	//create file if not exist
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		_, err = os.Create(filePath)
+		if err != nil {
+			zap.S().Errorf("Failed to create file %v - %v\n", filePath, err)
+			return err
+		}
+	}
+
+	bytes, _, err := downloadBytesFromUrl(url, "")
+	if err == nil {
+		_, err = saveFile(bytes, filePath)
+	} else {
+		zap.S().Infof("file [%v] was not downloaded, reason - [%v]", url, err)
+	}
+
+	return err
+}

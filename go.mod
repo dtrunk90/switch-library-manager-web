@@ -13,10 +13,13 @@ require (
 )
 
 require (
+	github.com/disintegration/gift v1.2.0 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
+	github.com/pierrre/imageserver v0.0.0-20231013080238-eaaa7dc7d331 // indirect
+	github.com/pierrre/imageutil v1.0.0 // indirect
 	github.com/stretchr/testify v1.5.1 // indirect
 	go.uber.org/atomic v1.6.0 // indirect
 	go.uber.org/multierr v1.5.0 // indirect
-	golang.org/x/sys v0.0.0-20200615200032-f1bc736245b1 // indirect
-	gopkg.in/yaml.v2 v2.2.8 // indirect
+	golang.org/x/sys v0.13.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

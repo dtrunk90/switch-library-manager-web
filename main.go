@@ -41,6 +41,13 @@ func main() {
 	defer logger.Sync() // flushes buffer, if any
 	sugar := logger.Sugar()
 
+	destinationPath := filepath.Join(dataFolder, "img")
+	if _, err := os.Stat(destinationPath); os.IsNotExist(err) {
+		if err := os.Mkdir(destinationPath, os.ModePerm); err != nil {
+			sugar.Errorf("Failed to create folder img - %v\n", err)
+		}
+	}
+
 	sugar.Info("[SLM starts]")
 	sugar.Infof("[Executable: %v]", exePath)
 	sugar.Infof("[Data folder: %v]", dataFolder)
