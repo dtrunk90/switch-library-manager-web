@@ -1,5 +1,7 @@
 FROM alpine:latest
 
+RUN apk add --no-cache tzdata
+
 ENV SLM_DATA_DIR /usr/local/share/switch-library-manager-web
 
 RUN mkdir -p $SLM_DATA_DIR
