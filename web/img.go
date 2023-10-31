@@ -17,7 +17,6 @@ import (
 )
 
 func (web *Web) HandleImages() {
-	//http.Handle("/i/", http.StripPrefix("/i/", http.FileServer(http.Dir(filepath.Join(web.dataFolder, "img")))))
 	http.Handle("/i/", &imageserver_http.Handler {
 		Parser: imageserver_http.ListParser([]imageserver_http.Parser {
 			&imageserver_http.SourceTransformParser {
