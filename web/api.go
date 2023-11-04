@@ -22,15 +22,20 @@ type ApiExtendedFileInfo struct {
 	Version        int    `json:"version"`
 }
 
+type ApiDlcItem struct {
+	ApiExtendedFileInfo
+	Name string `json:"name"`
+}
+
 type ApiTitleItem struct {
 	ApiFileInfo
-	BannerUrl     string                         `json:"bannerUrl,omitempty"`
-	IconUrl       string                         `json:"iconUrl,omitempty"`
-	ThumbnailUrl  string                         `json:"thumbnailUrl,omitempty"`
-	LatestUpdate  ApiExtendedFileInfo            `json:"latestUpdate"`
-	Name          map[string]string              `json:"name"`
-	Region        string                         `json:"region,omitempty"`
-	Dlc           map[string]ApiExtendedFileInfo `json:"dlc,omitempty"`
+	BannerUrl     string                `json:"bannerUrl,omitempty"`
+	IconUrl       string                `json:"iconUrl,omitempty"`
+	ThumbnailUrl  string                `json:"thumbnailUrl,omitempty"`
+	LatestUpdate  ApiExtendedFileInfo   `json:"latestUpdate"`
+	Name          map[string]string     `json:"name"`
+	Region        string                `json:"region,omitempty"`
+	Dlc           map[string]ApiDlcItem `json:"dlc,omitempty"`
 }
 
 func (web *Web) HandleApi() {
@@ -104,18 +109,27 @@ func (web *Web) HandleApi() {
 							item.ThumbnailUrl = item.BannerUrl + "?width=90"
 						}
 
-						item.Dlc = map[string]ApiExtendedFileInfo{}
+						item.Dlc = map[string]ApiDlcItem{}
 
 						for id, dlc := range v.Dlc {
 							dlcTitleId := strings.ToUpper(id)
 
-							item.Dlc[dlcTitleId] = ApiExtendedFileInfo {
-								ApiFileInfo: ApiFileInfo {
-									DownloadUrl: "/api/titles/" + titleId + "/dlc/" + dlcTitleId,
-									Size:        dlc.ExtendedInfo.Size,
-									Type:        strings.ToUpper(filepath.Ext(dlc.ExtendedInfo.FileName)[1:]),
+							item.Dlc[dlcTitleId] = ApiDlcItem {
+								ApiExtendedFileInfo: ApiExtendedFileInfo {
+									ApiFileInfo: ApiFileInfo {
+										DownloadUrl: "/api/titles/" + titleId + "/dlc/" + dlcTitleId,
+										Size:        dlc.ExtendedInfo.Size,
+										Type:        strings.ToUpper(filepath.Ext(dlc.ExtendedInfo.FileName)[1:]),
+									},
+									Version:     dlc.Metadata.Version,
 								},
-								Version:     dlc.Metadata.Version,
+							}
+
+							if entry, ok2 := web.state.switchDB.TitlesMap[k].Dlc[id]; ok2 {
+								if dlcItem, ok3 := item.Dlc[dlcTitleId]; ok3 {
+									dlcItem.Name = entry.Name
+									item.Dlc[dlcTitleId] = dlcItem
+								}
 							}
 
 							if entry, ok2 := item.Dlc[dlcTitleId]; ok2 {
