@@ -19,10 +19,9 @@ const (
 	VERSIONS_JSON_FILENAME = "versions.json"
 	SLM_VERSION            = "1.4.0"
 	SLM_WEB_VERSION        = "1.0.2"
-	TITLES_JSON_URL        = "https://tinfoil.media/repo/db/titles.json"
-	//TITLES_JSON_URL    = "https://raw.githubusercontent.com/blawar/titledb/master/titles.US.en.json"
-	VERSIONS_JSON_URL = "https://tinfoil.media/repo/db/versions.json"
-	//VERSIONS_JSON_URL = "https://raw.githubusercontent.com/blawar/titledb/master/versions.json"
+	TITLES_JSON_URL        = "https://tinfoil.io/repo/db/titles.json"
+	//VERSIONS_JSON_URL    = "https://tinfoil.io/repo/db/versions.json"
+	VERSIONS_JSON_URL      = "https://raw.githubusercontent.com/blawar/titledb/master/versions.json"
 )
 
 const (
