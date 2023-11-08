@@ -18,7 +18,7 @@ const (
 	TITLE_JSON_FILENAME    = "titles.json"
 	VERSIONS_JSON_FILENAME = "versions.json"
 	SLM_VERSION            = "1.4.0"
-	SLM_WEB_VERSION        = "1.0.2"
+	SLM_WEB_VERSION        = "1.0.10"
 	TITLES_JSON_URL        = "https://tinfoil.io/repo/db/titles.json"
 	//VERSIONS_JSON_URL    = "https://tinfoil.io/repo/db/versions.json"
 	VERSIONS_JSON_URL      = "https://raw.githubusercontent.com/blawar/titledb/master/versions.json"
