@@ -16,23 +16,34 @@ type ApiFileInfo struct {
 	Type        string `json:"type,omitempty"`
 }
 
+type ApiSystemInfo struct {
+	RequiredSystemVersion int `json:"requiredSystemVersion,omitempty"`
+}
+
 type ApiExtendedFileInfo struct {
 	ApiFileInfo
 	DisplayVersion string `json:"displayVersion,omitempty"`
 	Version        int    `json:"version"`
 }
 
+type ApiUpdateItem struct {
+	ApiExtendedFileInfo
+	ApiSystemInfo
+}
+
 type ApiDlcItem struct {
 	ApiExtendedFileInfo
-	Name string `json:"name"`
+	Name                       string `json:"name"`
+	RequiredApplicationVersion int    `json:"requiredApplicationVersion"`
 }
 
 type ApiTitleItem struct {
 	ApiFileInfo
+	ApiSystemInfo
 	BannerUrl     string                `json:"bannerUrl,omitempty"`
 	IconUrl       string                `json:"iconUrl,omitempty"`
 	ThumbnailUrl  string                `json:"thumbnailUrl,omitempty"`
-	LatestUpdate  ApiExtendedFileInfo   `json:"latestUpdate"`
+	LatestUpdate  ApiUpdateItem         `json:"latestUpdate"`
 	Name          map[string]string     `json:"name"`
 	Region        string                `json:"region,omitempty"`
 	Dlc           map[string]ApiDlcItem `json:"dlc,omitempty"`
@@ -48,7 +59,7 @@ func (web *Web) HandleApi() {
 			for k, v := range web.state.localDB.TitlesMap {
 				if v.BaseExist {
 					titleId := strings.ToUpper(v.File.Metadata.TitleId)
-					latestUpdate := ApiExtendedFileInfo { Version: v.LatestUpdate }
+					latestUpdate := ApiUpdateItem{ ApiExtendedFileInfo: ApiExtendedFileInfo { Version: v.LatestUpdate } }
 					name := map[string]string{}
 
 					if v.File.Metadata.Ncap != nil {
@@ -78,13 +89,16 @@ func (web *Web) HandleApi() {
 					}
 
 					items[titleId] = ApiTitleItem {
-						ApiFileInfo: ApiFileInfo {
+						ApiFileInfo:   ApiFileInfo {
 							DownloadUrl:  "/api/titles/" + titleId,
 							Size:         v.File.ExtendedInfo.Size,
 							Type:         strings.ToUpper(filepath.Ext(v.File.ExtendedInfo.FileName)[1:]),
 						},
-						LatestUpdate: latestUpdate,
-						Name:         name,
+						ApiSystemInfo: ApiSystemInfo {
+							RequiredSystemVersion:        v.File.Metadata.RequiredTitleVersion,
+						},
+						LatestUpdate:  latestUpdate,
+						Name:          name,
 					}
 
 					if title, ok1 := web.state.switchDB.TitlesMap[k]; ok1 {
@@ -115,14 +129,15 @@ func (web *Web) HandleApi() {
 							dlcTitleId := strings.ToUpper(id)
 
 							item.Dlc[dlcTitleId] = ApiDlcItem {
-								ApiExtendedFileInfo: ApiExtendedFileInfo {
-									ApiFileInfo: ApiFileInfo {
+								ApiExtendedFileInfo:        ApiExtendedFileInfo {
+									ApiFileInfo:    ApiFileInfo {
 										DownloadUrl: "/api/titles/" + titleId + "/dlc/" + dlcTitleId,
 										Size:        dlc.ExtendedInfo.Size,
 										Type:        strings.ToUpper(filepath.Ext(dlc.ExtendedInfo.FileName)[1:]),
 									},
-									Version:     dlc.Metadata.Version,
+									Version:        dlc.Metadata.Version,
 								},
+								RequiredApplicationVersion: dlc.Metadata.RequiredTitleVersion,
 							}
 
 							if entry, ok2 := web.state.switchDB.TitlesMap[k].Dlc[id]; ok2 {

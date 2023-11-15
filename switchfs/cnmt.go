@@ -30,11 +30,12 @@ type Content struct {
 }
 
 type ContentMetaAttributes struct {
-	TitleId  string `json:"title_id"`
-	Version  int    `json:"version"`
-	Type     string `json:"type"`
-	Contents map[string]Content
-	Ncap     *Nacp
+	TitleId              string `json:"title_id"`
+	Version              int    `json:"version"`
+	Type                 string `json:"type"`
+	RequiredTitleVersion int    `json:"required_title_version"`
+	Contents             map[string]Content
+	Ncap                 *Nacp
 }
 
 type ContentMeta struct {
@@ -66,12 +67,14 @@ func readBinaryCnmt(pfs0 *PFS0, data []byte) (*ContentMetaAttributes, error) {
 	cnmt := data[int64(cnmtFile.StartOffset):]
 	titleId := binary.LittleEndian.Uint64(cnmt[0:0x8])
 	version := binary.LittleEndian.Uint32(cnmt[0x8:0xC])
-	tableOffset := binary.LittleEndian.Uint16(cnmt[0xE:0x10])
+	extendedHeaderSize := binary.LittleEndian.Uint16(cnmt[0xE:0x10])
+	extendedHeader := cnmt[0x20:0x20+extendedHeaderSize]
+	requiredTitleVersion := binary.LittleEndian.Uint32(extendedHeader[0x8:0xC])
 	contentEntryCount := binary.LittleEndian.Uint16(cnmt[0x10:0x12])
 	//metaEntryCount := binary.LittleEndian.Uint16(cnmt[0x12:0x14])
 	contents := map[string]Content{}
 	for i := uint16(0); i < contentEntryCount; i++ {
-		position := 0x20 /*size of cnmt header*/ + tableOffset + (i * uint16(0x38))
+		position := 0x20 /*size of cnmt header*/ + extendedHeaderSize + (i * uint16(0x38))
 		ncaId := cnmt[position+0x20 : position+0x20+0x10]
 		//fmt.Println(fmt.Sprintf("0%x", ncaId))
 		contentType := ""
@@ -103,7 +106,7 @@ func readBinaryCnmt(pfs0 *PFS0, data []byte) (*ContentMetaAttributes, error) {
 		metaType = "UPD"
 	}
 
-	return &ContentMetaAttributes{Contents: contents, Version: int(version), TitleId: fmt.Sprintf("0%x", titleId), Type: metaType}, nil
+	return &ContentMetaAttributes{Contents: contents, Version: int(version), TitleId: fmt.Sprintf("0%x", titleId), Type: metaType, RequiredTitleVersion: int(requiredTitleVersion)}, nil
 }
 
 func readXmlCnmt(xmlBytes []byte) (*ContentMetaAttributes, error) {
