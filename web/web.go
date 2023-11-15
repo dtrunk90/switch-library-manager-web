@@ -164,6 +164,8 @@ func (web *Web) Start() {
 
 	http.Handle("/", web.router)
 
+	web.sugarLogger.Info("[SLM started]")
+
 	if err := http.ListenAndServe(fmt.Sprint(":", web.appSettings.Port), nil); err != nil {
 		web.sugarLogger.Error(fmt.Errorf("running http server failed: %w", err))
 		log.Fatal(err)
