@@ -17,7 +17,7 @@ type ApiFileInfo struct {
 }
 
 type ApiSystemInfo struct {
-	RequiredSystemVersion int `json:"requiredSystemVersion,omitempty"`
+	RequiredSystemVersion int `json:"requiredSystemVersion"`
 }
 
 type ApiExtendedFileInfo struct {
@@ -70,6 +70,7 @@ func (web *Web) HandleApi() {
 						latestUpdate.DownloadUrl = "/api/titles/" + titleId + "/updates/" + strconv.Itoa(v.LatestUpdate)
 						latestUpdate.Size = v.Updates[v.LatestUpdate].ExtendedInfo.Size
 						latestUpdate.Type = strings.ToUpper(filepath.Ext(v.Updates[v.LatestUpdate].ExtendedInfo.FileName)[1:])
+						latestUpdate.RequiredSystemVersion = v.Updates[v.LatestUpdate].Metadata.RequiredTitleVersion
 
 						if v.Updates[v.LatestUpdate].Metadata.Ncap != nil {
 							latestUpdate.DisplayVersion = v.Updates[v.LatestUpdate].Metadata.Ncap.DisplayVersion
