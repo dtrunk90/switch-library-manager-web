@@ -1,10 +1,16 @@
 /*jshint esversion: 9 */
 /*globals bootstrap */
 
-function insertAlert(element, contextualClass, iconClass, strongMessage, message) {
+function insertAlert(element, contextualClass, iconClass, strongMessage, message, dismissible = true, id = "") {
 	const alert = document.createElement('div');
-	alert.classList.add('alert', contextualClass, 'd-flex', 'align-items-center', 'alert-dismissible', 'fade', 'show');
+	alert.classList.add('alert', contextualClass, 'd-flex', 'align-items-center', 'fade', 'show');
+	if (dismissible) {
+		alert.classList.add('alert-dismissible');
+	}
 	alert.setAttribute('role', 'alert');
+	if (id != "") {
+		alert.id = id;
+	}
 
 	const icon = document.createElement('span');
 	icon.classList.add('bi', iconClass, 'flex-shrink-0', 'me-2');
@@ -22,12 +28,14 @@ function insertAlert(element, contextualClass, iconClass, strongMessage, message
 	fullMessageWrapper.appendChild(document.createTextNode(message));
 	alert.appendChild(fullMessageWrapper);
 
-	const closeBtn = document.createElement('button');
-	closeBtn.setAttribute('aria-label', 'Close');
-	closeBtn.setAttribute('type', 'button');
-	closeBtn.classList.add('btn-close');
-	closeBtn.dataset.bsDismiss = 'alert';
-	alert.appendChild(closeBtn);
+	if (dismissible) {
+		const closeBtn = document.createElement('button');
+		closeBtn.setAttribute('aria-label', 'Close');
+		closeBtn.setAttribute('type', 'button');
+		closeBtn.classList.add('btn-close');
+		closeBtn.dataset.bsDismiss = 'alert';
+		alert.appendChild(closeBtn);
+	}
 
 	element.insertBefore(alert, element.firstChild);
 }
@@ -48,7 +56,7 @@ function onSubmit(form) {
 		headers: {
 			'Content-type': 'application/x-www-form-urlencoded'
 		}
-	}).then(function (response) {
+	}).then(response => {
 		if (!response.ok) {
 			throw response;
 		}
@@ -56,7 +64,7 @@ function onSubmit(form) {
 		response.json().then(jsonResponse => {
 			insertAlert(form, 'alert-success', 'bi-check-circle-fill', jsonResponse.strongMessage, jsonResponse.message);
 		});
-	}).catch(function (error) {
+	}).catch(error => {
 		error.json().then(jsonResponse => {
 			if (jsonResponse.globalError.strongMessage || jsonResponse.globalError.message) {
 				insertAlert(form, 'alert-danger', 'bi-exclamation-triangle-fill', jsonResponse.globalError.strongMessage, jsonResponse.globalError.message);
@@ -78,9 +86,32 @@ function onSubmit(form) {
 	});
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+function checkSyncStatus() {
+	let checkAgain = true;
+
+	fetch('/sync', { method: 'GET' }).then(response => response.json().then(isSynchronizing => {
+		if (!isSynchronizing) {
+			document.getElementById('alert_sync').remove();
+			checkAgain = false;
+		}
+	}));
+
+	if (checkAgain) {
+		setTimeout(checkSyncStatus, 5000);
+	}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
 	const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
 	[...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+	const sync = document.getElementById('sync');
+	sync.addEventListener('click', e => {
+		e.preventDefault();
+		fetch(sync.href, { method: 'POST' });
+		insertAlert(document.querySelector('main > .container-fluid'), 'alert-info', 'bi-info-circle-fill', "Synchronizing!", "Titles are getting synchronized.", false, "alert_sync");
+		checkSyncStatus();
+	});
 
 	const settingsForm = document.getElementById('settingsForm');
 	if (settingsForm) {

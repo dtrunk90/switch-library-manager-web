@@ -12,6 +12,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -21,8 +22,9 @@ import (
 
 type WebState struct {
 	sync.Mutex
-	switchDB *db.SwitchTitlesDB
-	localDB  *db.LocalSwitchFilesDB
+	switchDB        *db.SwitchTitlesDB
+	localDB         *db.LocalSwitchFilesDB
+	IsSynchronizing bool
 }
 
 type Web struct {
@@ -128,7 +130,16 @@ func CreateWeb(router *mux.Router, embedFS embed.FS, appSettings *settings.AppSe
 }
 
 func (web *Web) Start() {
-	web.updateDB()
+	titleFilePath := filepath.Join(web.dataFolder, settings.TITLE_JSON_FILENAME)
+	versionsFilePath := filepath.Join(web.dataFolder, settings.VERSIONS_JSON_FILENAME)
+
+	if titleFile, err := os.Open(titleFilePath); err == nil {
+		if versionsFile, err := os.Open(versionsFilePath); err == nil {
+			if switchTitleDB, err := db.CreateSwitchTitleDB(titleFile, versionsFile); err == nil {
+				web.state.switchDB = switchTitleDB
+			}
+		}
+	}
 
 	localDbManager, err := db.NewLocalSwitchDBManager(web.dataFolder)
 	if err != nil {
@@ -144,8 +155,10 @@ func (web *Web) Start() {
 	web.localDbManager = localDbManager
 	defer localDbManager.Close()
 
-	if _, err := web.buildLocalDB(web.localDbManager, true); err != nil {
-		web.sugarLogger.Error(err)
+	if web.state.switchDB != nil {
+		if _, err := web.buildLocalDB(web.localDbManager, false); err != nil {
+			web.sugarLogger.Error(err)
+		}
 	}
 
 	// Run http server
@@ -157,6 +170,7 @@ func (web *Web) Start() {
 	web.HandleDLC()
 	web.HandleIssues()
 	web.HandleSettings()
+	web.HandleSynchronize()
 	web.HandleOrganize()
 	web.HandleApi()
 
