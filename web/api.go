@@ -17,7 +17,7 @@ type ApiFileInfo struct {
 }
 
 type ApiSystemInfo struct {
-	RequiredSystemVersion int `json:"requiredSystemVersion"`
+	RequiredSystemVersion int `json:"requiredSystemVersion,omitempty"`
 }
 
 type ApiExtendedFileInfo struct {
@@ -34,7 +34,7 @@ type ApiUpdateItem struct {
 type ApiDlcItem struct {
 	ApiExtendedFileInfo
 	Name                       string `json:"name"`
-	RequiredApplicationVersion int    `json:"requiredApplicationVersion"`
+	RequiredApplicationVersion int    `json:"requiredApplicationVersion,omitempty"`
 }
 
 type ApiTitleItem struct {
